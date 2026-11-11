@@ -14,11 +14,12 @@
             --card-bg: #ffffff;
             --text-main: #4a4a4a;
             --text-muted: #8c8c8c;
-            --accent-green: #a8c3b2;
-            --accent-green-hover: #96b3a0;
+            --accent-green: #3b5e4a; /* Verde mais escuro */
+            --accent-green-hover: #2c4737;
             --accent-pink: #f4dcd6;
             --border-color: #eee9e0;
             --error-color: #c65f65;
+            --btn-secondary: #f1f5f9; /* Cinza azulado suave */
         }
 
         * {
@@ -78,7 +79,7 @@
             letter-spacing: 0.5px;
         }
 
-        input[type="email"], input[type="password"] {
+        input[type="text"], input[type="email"], input[type="password"] {
             width: 100%;
             padding: 12px 16px;
             border: 1px solid var(--border-color);
@@ -109,8 +110,13 @@
         .btn:disabled { opacity: 0.65; cursor: wait; }
 
         .btn-secondary {
-            background-color: var(--accent-pink);
+            background-color: var(--btn-secondary);
             color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
         }
 
         .form-actions {
@@ -121,10 +127,21 @@
         .message {
             font-size: 0.9rem;
             margin-bottom: 16px;
+            padding: 10px;
+            border-radius: 8px;
         }
 
-        .error-message { color: var(--error-color); }
-        .status-message { color: #4d8063; }
+        .error-message { 
+            color: var(--error-color); 
+            background-color: #fdf0f0;
+            border: 1px solid #f9dcdc;
+        }
+        
+        .status-message { 
+            color: #4d8063; 
+            background-color: #edf5f0;
+            border: 1px solid #d5e8db;
+        }
 
         .app-header {
             display: flex;
@@ -158,6 +175,7 @@
     </style>
 </head>
 <body>
+    <!-- TELA DE LOGIN -->
     <section id="authView" class="card">
         <h2>Bem-vindo</h2>
         <p>Entre com sua conta ou crie uma nova.</p>
@@ -178,11 +196,84 @@
 
             <div class="form-actions">
                 <button id="loginBtn" type="submit" class="btn">Entrar</button>
-                <button id="signupBtn" type="button" class="btn btn-secondary">Criar conta</button>
+                <button id="showRegisterBtn" type="button" class="btn btn-secondary">Criar conta com E-mail</button>
+            </div>
+            
+            <div style="margin: 20px 0; text-align: center; color: var(--text-muted); font-size: 0.85rem; position: relative;">
+                <span style="background: var(--card-bg); padding: 0 10px; position: relative; z-index: 1;">ou</span>
+                <div style="position: absolute; top: 50%; left: 0; right: 0; border-top: 1px solid var(--border-color); z-index: 0;"></div>
+            </div>
+            
+            <button id="googleLoginBtn" type="button" class="btn" style="background-color: #4285F4; margin-bottom: 10px;">
+                Entrar com o Google
+            </button>
+        </form>
+    </section>
+
+    <!-- TELA DE CADASTRO -->
+    <section id="registerView" class="card hidden">
+        <h2>Criar Conta</h2>
+        <p>Preencha os dados para se cadastrar.</p>
+        <div id="registerErrorMessage" class="message error-message hidden"></div>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="regName">Nome Completo</label>
+                <input type="text" id="regName" required>
+            </div>
+            <div class="form-group">
+                <label for="regEmail">E-mail</label>
+                <input type="email" id="regEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Senha</label>
+                <input type="password" id="regPassword" required minlength="6">
+            </div>
+            <div class="form-group">
+                <label for="regArea">Área de Pesquisa (Scimago)</label>
+                <select id="regArea" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background-color: #faf9f6; outline: none; color: var(--text-main);">
+                    <option value="">Selecione uma área...</option>
+                    <option value="Agricultural and Biological Sciences">Agricultural and Biological Sciences</option>
+                    <option value="Arts and Humanities">Arts and Humanities</option>
+                    <option value="Biochemistry, Genetics and Molecular Biology">Biochemistry, Genetics and Molecular Biology</option>
+                    <option value="Business, Management and Accounting">Business, Management and Accounting</option>
+                    <option value="Chemical Engineering">Chemical Engineering</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Decision Sciences">Decision Sciences</option>
+                    <option value="Earth and Planetary Sciences">Earth and Planetary Sciences</option>
+                    <option value="Economics, Econometrics and Finance">Economics, Econometrics and Finance</option>
+                    <option value="Energy">Energy</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Environmental Science">Environmental Science</option>
+                    <option value="Immunology and Microbiology">Immunology and Microbiology</option>
+                    <option value="Materials Science">Materials Science</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Medicine">Medicine</option>
+                    <option value="Multidisciplinary">Multidisciplinary</option>
+                    <option value="Neuroscience">Neuroscience</option>
+                    <option value="Nursing">Nursing</option>
+                    <option value="Pharmacology, Toxicology and Pharmaceutics">Pharmacology, Toxicology...</option>
+                    <option value="Physics and Astronomy">Physics and Astronomy</option>
+                    <option value="Psychology">Psychology</option>
+                    <option value="Social Sciences">Social Sciences</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" id="submitRegisterBtn" class="btn">Cadastrar</button>
+                <button type="button" id="backToLoginBtn" class="btn btn-secondary">Voltar</button>
             </div>
         </form>
     </section>
 
+    <!-- TELA VERIFIQUE SEU EMAIL -->
+    <section id="verifyEmailView" class="card hidden" style="text-align: center;">
+        <h2 style="color: var(--accent-green);">Quase lá!</h2>
+        <p>Enviamos um link de confirmação para o seu e-mail. Por favor, clique nele para ativar sua conta antes de fazer o login.</p>
+        <button type="button" id="backToLoginFromVerifyBtn" class="btn btn-secondary">Voltar para o Login</button>
+    </section>
+
+    <!-- PAINEL PRINCIPAL (LOGADO) -->
     <main id="appView" class="card app-card hidden">
         <div class="app-header">
             <div>
@@ -203,16 +294,29 @@
         const SUPABASE_URL = 'https://sikucdacxktouklgqpeu.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_Y_KwtD9Oba1u3a7RoBa8sg_HBAdjge2';
 
+        // Elementos HTML
         const authView = document.getElementById('authView');
+        const registerView = document.getElementById('registerView');
+        const verifyEmailView = document.getElementById('verifyEmailView');
         const appView = document.getElementById('appView');
+        
         const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        
         const loginBtn = document.getElementById('loginBtn');
-        const signupBtn = document.getElementById('signupBtn');
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+        const showRegisterBtn = document.getElementById('showRegisterBtn');
+        const submitRegisterBtn = document.getElementById('submitRegisterBtn');
+        const backToLoginBtn = document.getElementById('backToLoginBtn');
+        const backToLoginFromVerifyBtn = document.getElementById('backToLoginFromVerifyBtn');
         const logoutBtn = document.getElementById('logoutBtn');
+        
         const errorMessage = document.getElementById('errorMessage');
         const statusMessage = document.getElementById('statusMessage');
+        const registerErrorMessage = document.getElementById('registerErrorMessage');
         const userEmailSpan = document.getElementById('userEmail');
 
+        // Funções de Navegação e Interface
         function showMessage(element, message) {
             element.textContent = message;
             element.classList.remove('hidden');
@@ -221,30 +325,59 @@
         function clearMessages() {
             errorMessage.textContent = '';
             statusMessage.textContent = '';
+            registerErrorMessage.textContent = '';
             errorMessage.classList.add('hidden');
             statusMessage.classList.add('hidden');
+            registerErrorMessage.classList.add('hidden');
         }
 
         function showAppView(email) {
             userEmailSpan.textContent = email || 'Conta autenticada';
             authView.classList.add('hidden');
+            registerView.classList.add('hidden');
+            verifyEmailView.classList.add('hidden');
             appView.classList.remove('hidden');
         }
 
         function showAuthView() {
             appView.classList.add('hidden');
+            registerView.classList.add('hidden');
+            verifyEmailView.classList.add('hidden');
+            authView.classList.remove('hidden');
+        }
+
+        function showRegister() {
+            clearMessages();
+            authView.classList.add('hidden');
+            registerView.classList.remove('hidden');
+        }
+
+        function showVerifyEmail() {
+            registerView.classList.add('hidden');
+            verifyEmailView.classList.remove('hidden');
+        }
+
+        function backToLogin() {
+            clearMessages();
+            registerView.classList.add('hidden');
+            verifyEmailView.classList.add('hidden');
             authView.classList.remove('hidden');
         }
 
         function setLoading(isLoading) {
             loginBtn.disabled = isLoading;
-            signupBtn.disabled = isLoading;
-            logoutBtn.disabled = isLoading;
+            showRegisterBtn.disabled = isLoading;
+            googleLoginBtn.disabled = isLoading;
             loginBtn.textContent = isLoading ? 'Aguarde...' : 'Entrar';
         }
 
-        let supabaseClient;
+        // Event Listeners de Navegação
+        showRegisterBtn.addEventListener('click', showRegister);
+        backToLoginBtn.addEventListener('click', backToLogin);
+        backToLoginFromVerifyBtn.addEventListener('click', backToLogin);
 
+        // Inicialização do Supabase
+        let supabaseClient;
         try {
             if (!window.supabase?.createClient) {
                 throw new Error('O SDK do Supabase não carregou. Verifique sua conexão e atualize a página.');
@@ -255,7 +388,7 @@
         }
 
         if (supabaseClient) {
-            // Atualiza a tela quando a autenticação muda (login, logout ou sessão restaurada).
+            // Atualiza a tela quando a autenticação muda
             supabaseClient.auth.onAuthStateChange((event, session) => {
                 if (session?.user) {
                     showAppView(session.user.email);
@@ -278,6 +411,7 @@
 
             checkSession();
 
+            // Login com E-mail e Senha
             loginForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
                 clearMessages();
@@ -289,7 +423,6 @@
                 try {
                     const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) throw error;
-                    // A mudança de estado de autenticação mostra o painel.
                 } catch (error) {
                     showMessage(errorMessage, 'Erro ao entrar: ' + error.message);
                 } finally {
@@ -297,33 +430,68 @@
                 }
             });
 
-            signupBtn.addEventListener('click', async () => {
-                clearMessages();
-                if (!loginForm.reportValidity()) return;
-                setLoading(true);
-
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value;
-
+            // Login com Google
+            googleLoginBtn.addEventListener('click', async () => {
                 try {
-                    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                    const { error } = await supabaseClient.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: { redirectTo: window.location.origin + window.location.pathname }
+                    });
                     if (error) throw error;
-
-                    if (data.session) {
-                        showAppView(data.user?.email);
-                    } else {
-                        showMessage(statusMessage, 'Cadastro enviado. Confira seu e-mail para confirmar a conta antes de entrar.');
-                    }
                 } catch (error) {
-                    showMessage(errorMessage, 'Erro ao criar conta: ' + error.message);
-                } finally {
-                    setLoading(false);
+                    showMessage(errorMessage, 'Erro ao conectar com Google: ' + error.message);
                 }
             });
 
+            // Novo Cadastro (E-mail, Senha, Nome e Área)
+            registerForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                registerErrorMessage.classList.add('hidden');
+                submitRegisterBtn.disabled = true;
+                submitRegisterBtn.textContent = 'Cadastrando...';
+
+                const nome = document.getElementById('regName').value.trim();
+                const email = document.getElementById('regEmail').value.trim();
+                const password = document.getElementById('regPassword').value;
+                const area = document.getElementById('regArea').value;
+
+                try {
+                    const { data, error } = await supabaseClient.auth.signUp({ 
+                        email, 
+                        password,
+                        options: {
+                            data: {
+                                nome_completo: nome,
+                                area_scimago: area
+                            }
+                        }
+                    });
+                    
+                    if (error) throw error;
+
+                    // Verifica se o usuário já existia (evita falso positivo no Supabase)
+                    if (data.user && data.user.identities && data.user.identities.length === 0) {
+                        registerErrorMessage.textContent = 'Este e-mail já está em uso.';
+                        registerErrorMessage.classList.remove('hidden');
+                    } else if (data.session) {
+                        showAppView(data.user?.email); // Logou direto (sem confirmação de email ativada)
+                    } else {
+                        showVerifyEmail(); // Precisa confirmar email
+                    }
+                } catch (error) {
+                    registerErrorMessage.textContent = 'Erro ao criar conta: ' + error.message;
+                    registerErrorMessage.classList.remove('hidden');
+                } finally {
+                    submitRegisterBtn.disabled = false;
+                    submitRegisterBtn.textContent = 'Cadastrar';
+                }
+            });
+
+            // Sair (Logout)
             logoutBtn.addEventListener('click', async () => {
                 clearMessages();
-                setLoading(true);
+                logoutBtn.disabled = true;
+                logoutBtn.textContent = 'Saindo...';
 
                 try {
                     const { error } = await supabaseClient.auth.signOut();
@@ -332,7 +500,8 @@
                 } catch (error) {
                     showMessage(errorMessage, 'Erro ao sair: ' + error.message);
                 } finally {
-                    setLoading(false);
+                    logoutBtn.disabled = false;
+                    logoutBtn.textContent = 'Sair';
                 }
             });
         }
