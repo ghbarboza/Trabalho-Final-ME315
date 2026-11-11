@@ -4,22 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trabalho Final ME315</title>
-    
+
     <!-- SDK oficial do Supabase via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* --- ESTILOS GERAIS & PALETA PASTEL --- */
         :root {
-            --bg-color: #fbf9f5;         /* Creme bem suave */
-            --card-bg: #ffffff;          /* Branco limpo */
-            --text-main: #4a4a4a;        /* Cinza escuro macio */
-            --text-muted: #8c8c8c;       /* Cinza médio */
-            --accent-green: #a8c3b2;     /* Verde-sálvia pastel */
+            --bg-color: #fbf9f5;
+            --card-bg: #ffffff;
+            --text-main: #4a4a4a;
+            --text-muted: #8c8c8c;
+            --accent-green: #a8c3b2;
             --accent-green-hover: #96b3a0;
-            --accent-pink: #f4dcd6;      /* Rosa-seco pastel */
-            --border-color: #eee9e0;     /* Borda sutil */
-            --error-color: #e5989b;      /* Vermelho pastel para avisos */
+            --accent-pink: #f4dcd6;
+            --border-color: #eee9e0;
+            --error-color: #c65f65;
         }
 
         * {
@@ -39,12 +38,8 @@
             padding: 20px;
         }
 
-        /* --- REGRA DE TELA OCULTA --- */
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
 
-        /* --- CARDS & CONTAINER --- */
         .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -55,11 +50,8 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02);
         }
 
-        .app-card {
-            max-width: 600px;
-        }
+        .app-card { max-width: 600px; }
 
-        /* --- TYPOGRAPHY --- */
         h1, h2, h3 {
             font-weight: 500;
             margin-bottom: 8px;
@@ -72,7 +64,6 @@
             margin-bottom: 24px;
         }
 
-        /* --- FORMULÁRIOS & CAMPOS --- */
         .form-group {
             margin-bottom: 20px;
             text-align: left;
@@ -87,8 +78,7 @@
             letter-spacing: 0.5px;
         }
 
-        input[type="email"],
-        input[type="password"] {
+        input[type="email"], input[type="password"] {
             width: 100%;
             padding: 12px 16px;
             border: 1px solid var(--border-color);
@@ -100,11 +90,8 @@
             transition: border-color 0.2s;
         }
 
-        input:focus {
-            border-color: var(--accent-green);
-        }
+        input:focus { border-color: var(--accent-green); }
 
-        /* --- BOTÕES --- */
         .btn {
             width: 100%;
             padding: 12px;
@@ -118,24 +105,27 @@
             transition: background-color 0.2s;
         }
 
-        .btn:hover {
-            background-color: var(--accent-green-hover);
-        }
+        .btn:hover { background-color: var(--accent-green-hover); }
+        .btn:disabled { opacity: 0.65; cursor: wait; }
 
         .btn-secondary {
             background-color: var(--accent-pink);
             color: var(--text-main);
         }
 
-        /* --- MENSAGENS DE ERRO --- */
-        .error-message {
-            color: var(--error-color);
-            font-size: 0.85rem;
-            margin-bottom: 16px;
-            display: none;
+        .form-actions {
+            display: grid;
+            gap: 10px;
         }
 
-        /* --- LAYOUT DO APP --- */
+        .message {
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .error-message { color: var(--error-color); }
+        .status-message { color: #4d8063; }
+
         .app-header {
             display: flex;
             justify-content: space-between;
@@ -145,9 +135,7 @@
             margin-bottom: 24px;
         }
 
-        .app-header h2 {
-            margin-bottom: 0;
-        }
+        .app-header h2 { margin-bottom: 0; }
 
         .badge {
             background-color: var(--accent-pink);
@@ -163,34 +151,39 @@
             margin-bottom: 20px;
             border: 1px dashed var(--border-color);
         }
+
+        @media (max-width: 480px) {
+            .card { padding: 28px 22px; }
+        }
     </style>
 </head>
 <body>
-
-    <!-- TELA 1: AUTENTICAÇÃO / LOGIN -->
     <section id="authView" class="card">
         <h2>Bem-vindo</h2>
-        <p>Insira suas credenciais para acessar.</p>
+        <p>Entre com sua conta ou crie uma nova.</p>
 
-        <div id="errorMessage" class="error-message"></div>
-        
+        <div id="errorMessage" class="message error-message hidden" role="alert"></div>
+        <div id="statusMessage" class="message status-message hidden" role="status" aria-live="polite"></div>
+
         <form id="loginForm">
             <div class="form-group">
                 <label for="email">E-mail</label>
-                <input type="email" id="email" placeholder="seu@email.com" required>
+                <input type="email" id="email" autocomplete="email" placeholder="seu@email.com" required>
             </div>
-            
+
             <div class="form-group">
                 <label for="password">Senha</label>
-                <input type="password" id="password" placeholder="••••••••" required>
+                <input type="password" id="password" autocomplete="current-password" placeholder="Sua senha" required>
             </div>
-            
-            <button type="submit" class="btn">Entrar</button>
+
+            <div class="form-actions">
+                <button id="loginBtn" type="submit" class="btn">Entrar</button>
+                <button id="signupBtn" type="button" class="btn btn-secondary">Criar conta</button>
+            </div>
         </form>
     </section>
 
-    <!-- TELA 2: APLICAÇÃO (Inicia oculta com .hidden) -->
-    <div id="appView" class="card app-card hidden">
+    <main id="appView" class="card app-card hidden">
         <div class="app-header">
             <div>
                 <h2>Painel Principal</h2>
@@ -198,91 +191,151 @@
             </div>
             <button id="logoutBtn" class="btn btn-secondary" style="width: auto; padding: 6px 16px;">Sair</button>
         </div>
-        
+
         <div class="content-box">
             <h3>Login realizado com sucesso!</h3>
             <p style="margin-bottom: 0; margin-top: 8px;">Conectado como: <strong id="userEmail">...</strong></p>
         </div>
-    </div>
+    </main>
 
-    <!-- CÓDIGO JAVASCRIPT / SUPABASE -->
     <script>
-        // =========================================================================
-        // Configuração do Supabase
-        // =========================================================================
-       const SUPABASE_URL = 'https://sikucdacxktouklggpeu.supabase.co';
-       const SUPABASE_KEY = 'sb_publishable_Y_KwtD9Oba1u3a7RoBa8sg_HBAdjge2';
+        // Use a URL e a chave pública (publishable/anon) do mesmo projeto Supabase.
+        const SUPABASE_URL = 'https://sikucdacxktouklggpeu.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_Y_KwtD9Oba1u3a7RoBa8sg_HBAdjge2';
 
-        // Inicializa o cliente do Supabase
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        // Referências dos elementos na tela
         const authView = document.getElementById('authView');
         const appView = document.getElementById('appView');
         const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const signupBtn = document.getElementById('signupBtn');
         const logoutBtn = document.getElementById('logoutBtn');
         const errorMessage = document.getElementById('errorMessage');
+        const statusMessage = document.getElementById('statusMessage');
         const userEmailSpan = document.getElementById('userEmail');
 
-        // =========================================================================
-        // 1. Função para trocar as telas
-        // =========================================================================
+        function showMessage(element, message) {
+            element.textContent = message;
+            element.classList.remove('hidden');
+        }
+
+        function clearMessages() {
+            errorMessage.textContent = '';
+            statusMessage.textContent = '';
+            errorMessage.classList.add('hidden');
+            statusMessage.classList.add('hidden');
+        }
+
         function showAppView(email) {
-            userEmailSpan.textContent = email;
+            userEmailSpan.textContent = email || 'Conta autenticada';
             authView.classList.add('hidden');
             appView.classList.remove('hidden');
         }
 
         function showAuthView() {
-            authView.classList.remove('hidden');
             appView.classList.add('hidden');
+            authView.classList.remove('hidden');
         }
 
-        // =========================================================================
-        // 2. Verificar se a pessoa já está logada ao carregar a página
-        // =========================================================================
-        async function checkSession() {
-            const { data: { session } } = await _supabase.auth.getSession();
-            if (session) {
-                showAppView(session.user.email);
-            } else {
-                showAuthView();
+        function setLoading(isLoading) {
+            loginBtn.disabled = isLoading;
+            signupBtn.disabled = isLoading;
+            logoutBtn.disabled = isLoading;
+            loginBtn.textContent = isLoading ? 'Aguarde...' : 'Entrar';
+        }
+
+        let supabaseClient;
+
+        try {
+            if (!window.supabase?.createClient) {
+                throw new Error('O SDK do Supabase não carregou. Verifique sua conexão e atualize a página.');
             }
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch (error) {
+            showMessage(errorMessage, error.message);
         }
-        checkSession();
 
-        // =========================================================================
-        // 3. Ação de Login
-        // =========================================================================
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            errorMessage.style.display = 'none';
-
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            // Fazer autenticação no Supabase
-            const { data, error } = await _supabase.auth.signInWithPassword({
-                email: email,
-                password: password
+        if (supabaseClient) {
+            // Atualiza a tela quando a autenticação muda (login, logout ou sessão restaurada).
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                if (session?.user) {
+                    showAppView(session.user.email);
+                } else if (event === 'SIGNED_OUT') {
+                    showAuthView();
+                }
             });
 
-            if (error) {
-                errorMessage.textContent = 'Erro ao entrar: ' + error.message;
-                errorMessage.style.display = 'block';
-            } else {
-                showAppView(data.user.email);
+            async function checkSession() {
+                try {
+                    const { data, error } = await supabaseClient.auth.getSession();
+                    if (error) throw error;
+                    if (data.session?.user) showAppView(data.session.user.email);
+                    else showAuthView();
+                } catch (error) {
+                    showAuthView();
+                    showMessage(errorMessage, 'Não foi possível verificar a sessão: ' + error.message);
+                }
             }
-        });
 
-        // =========================================================================
-        // 4. Ação de Logout
-        // =========================================================================
-        logoutBtn.addEventListener('click', async () => {
-            await _supabase.auth.signOut();
-            showAuthView();
-        });
+            checkSession();
+
+            loginForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                clearMessages();
+                setLoading(true);
+
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+
+                try {
+                    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    // A mudança de estado de autenticação mostra o painel.
+                } catch (error) {
+                    showMessage(errorMessage, 'Erro ao entrar: ' + error.message);
+                } finally {
+                    setLoading(false);
+                }
+            });
+
+            signupBtn.addEventListener('click', async () => {
+                clearMessages();
+                if (!loginForm.reportValidity()) return;
+                setLoading(true);
+
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+
+                try {
+                    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                    if (error) throw error;
+
+                    if (data.session) {
+                        showAppView(data.user?.email);
+                    } else {
+                        showMessage(statusMessage, 'Cadastro enviado. Confira seu e-mail para confirmar a conta antes de entrar.');
+                    }
+                } catch (error) {
+                    showMessage(errorMessage, 'Erro ao criar conta: ' + error.message);
+                } finally {
+                    setLoading(false);
+                }
+            });
+
+            logoutBtn.addEventListener('click', async () => {
+                clearMessages();
+                setLoading(true);
+
+                try {
+                    const { error } = await supabaseClient.auth.signOut();
+                    if (error) throw error;
+                    showAuthView();
+                } catch (error) {
+                    showMessage(errorMessage, 'Erro ao sair: ' + error.message);
+                } finally {
+                    setLoading(false);
+                }
+            });
+        }
     </script>
-
 </body>
 </html>
