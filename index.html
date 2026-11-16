@@ -8,90 +8,127 @@
     <!-- SDK oficial do Supabase via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <style>
-        :root {
-            --bg-color: #fbf9f5;
-            --card-bg: #ffffff;
-            --text-main: #4a4a4a;
-            --text-muted: #8c8c8c;
-            --accent-green: #3b5e4a;
-            --accent-green-hover: #2c4737;
-            --accent-pink: #f4dcd6;
-            --border-color: #eee9e0;
-            --error-color: #c65f65;
-            --btn-secondary: #f1f5f9;
-        }
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+    <!-- LOGIN -->
+    <div id="authView" class="auth-wrap">
+        <div class="card auth-card">
+            <h2 id="authTitulo">Entrar</h2>
+            <p>Trabalho Final ME315</p>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" autocomplete="email">
+            </div>
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" autocomplete="current-password">
+            </div>
+            <button class="btn" id="btnAuth">Entrar</button>
+            <button class="link-btn" id="btnToggle" type="button">Criar conta</button>
+            <p class="msg" id="authMsg" role="status"></p>
+        </div>
+    </div>
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+    <!-- APP -->
+    <div id="appView" class="hidden">
 
-        .hidden { display: none !important; }
+        <header class="topbar">
+            <h1>Credenciamento PPGE</h1>
+            <button class="btn btn-secondary" id="btnLogout">Sair</button>
+        </header>
 
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02);
-        }
+        <main class="content">
 
-        .app-card { max-width: 600px; }
+            <!-- TELA 1: avaliação do docente -->
+            <section class="view" id="view-avaliacao">
+                <h2>Avaliação do docente</h2>
+                <p>Envie o arquivo do docente para calcular a pontuação.</p>
 
-        h1, h2, h3 {
-            font-weight: 500;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
+                <div class="card">
+                    <label class="dropzone" for="arquivo">
+                        <strong>Escolher arquivo</strong>
+                        <span id="nomeArquivo">Nenhum arquivo selecionado</span>
+                    </label>
+                    <input type="file" id="arquivo" class="hidden" accept=".xml,.zip">
+                    <button class="btn" id="btnAvaliar" disabled>Calcular</button>
+                </div>
 
-        p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 24px;
-        }
+                <div class="card" id="resultado">
+                    <div class="stats">
+                        <div class="stat"><span class="stat-label">Pontuação</span><span class="stat-value">–</span></div>
+                        <div class="stat"><span class="stat-label">Mínimo</span><span class="stat-value">1,25</span></div>
+                        <div class="stat"><span class="stat-label">Situação</span><span class="stat-value">–</span></div>
+                    </div>
+                    <table>
+                        <thead><tr><th>Artigo</th><th>Periódico</th><th>Percentil</th></tr></thead>
+                        <tbody><tr><td colspan="3" class="vazio">Os 4 melhores artigos aparecem aqui.</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
 
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
+            <!-- TELA 2: rankings -->
+            <section class="view hidden" id="view-rankings">
+                <h2>Rankings dos periódicos</h2>
+                <p>Consulte o Scimago por área e por ano.</p>
 
-        label {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+                <div class="card">
+                    <div class="filtros">
+                        <div class="form-group">
+                            <label for="fArea">Área</label>
+                            <select id="fArea"><option>Todas</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fAno">Ano</label>
+                            <select id="fAno"><option>2025</option><option>2024</option><option>2023</option><option>2022</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fBusca">Periódico</label>
+                            <input type="text" id="fBusca" placeholder="Nome ou ISSN">
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>#</th><th>Periódico</th><th>ISSN</th><th>SJR</th><th>Percentil</th></tr></thead>
+                            <tbody><tr><td colspan="5" class="vazio">A tabela será preenchida pelo banco.</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
 
-        input[type="text"], input[type="email"], input[type="password"], select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background-color: #faf9f6;
-            color: var(--text-main);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
+            <!-- TELA 3: simulador -->
+            <section class="view hidden" id="view-simulador">
+                <h2>Simulador</h2>
+                <p>Teste em quais periódicos submeter para atingir 1,25.</p>
 
-        input:focus, select:focus { border-color: var(--accent-green); }
+                <div class="card">
+                    <div class="form-group">
+                        <label for="sPeriodico">Periódico alvo</label>
+                        <input type="text" id="sPeriodico" placeholder="Nome ou ISSN">
+                    </div>
+                    <button class="btn">Simular</button>
+                    <p class="vazio" style="margin-top:20px">O resultado e os pontos que faltam aparecem aqui.</p>
+                </div>
+            </section>
 
-        .btn {
-            width: 1
+        </main>
+
+        <!-- RODAPÉ: navegação entre as telas -->
+        <nav class="tabbar" aria-label="Navegação principal">
+            <a href="#avaliacao" data-view="avaliacao">Avaliação</a>
+            <a href="#rankings" data-view="rankings">Rankings</a>
+            <a href="#simulador" data-view="simulador">Simulador</a>
+        </nav>
+
+    </div>
+
+    <!-- SUAS CHAVES DO SUPABASE (Project Settings → API) -->
+    <script>
+    const SUPABASE_URL = 'https://sikucdacxktouklgqpeu.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_Y_KwtD9Oba1u3a7RoBa8sg_HBAdjge2';
+
+    </script>
+    <script src="js/app.js"></script>
+</body>
+</html>
